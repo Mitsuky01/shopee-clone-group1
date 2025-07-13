@@ -60,24 +60,43 @@ const LoginPage = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
-      <h2 className="text-xl font-semibold">Login</h2>
-      <input placeholder="Email" {...register('email', { required: true })} className="input" />
-      {errors.email && <p className="text-red-500">Email is required</p>}
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-sm bg-white shadow-md rounded-lg p-6 space-y-4">
+        <h2 className="text-2xl font-bold text-center">Login</h2>
 
-      <input placeholder="Password" type="password" {...register('password', { required: true })} className="input" />
-      {errors.password && <p className="text-red-500">Password is required</p>}
+        <input
+          placeholder="Email"
+          {...register('email', { required: true })}
+          className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-300"
+        />
+        {errors.email && <p className="text-red-500 text-sm">Email is required</p>}
 
-      {errorMsg && <p className="text-red-500">{errorMsg}</p>}
-      <button type="submit" className="btn">Login</button>
+        <input
+          placeholder="Password"
+          type="password"
+          {...register('password', { required: true })}
+          className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-300"
+        />
+        {errors.password && <p className="text-red-500 text-sm">Password is required</p>}
 
-       <p className="text-sm">
-        Don’t have an account?{' '}
-        <a href="/register" className="text-blue-600 underline">
-          Register here
-        </a>
-      </p>
-    </form>
+        {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition disabled:opacity-50"
+          disabled={loading}
+        >
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
+
+        <p className="text-sm text-center">
+          Don’t have an account?{' '}
+          <a href="/register" className="text-blue-600 underline hover:text-blue-800">
+            Register here
+          </a>
+        </p>
+      </form>
+    </div>
   )
 }
 

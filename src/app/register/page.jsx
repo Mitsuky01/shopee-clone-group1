@@ -71,59 +71,76 @@ const RegisterPage = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
-      <h2 className="text-xl font-semibold">Register</h2>
+     <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-sm bg-white shadow-md rounded-lg p-6 space-y-4"
+      >
+        <h2 className="text-2xl font-bold text-center">Register</h2>
 
-      <select {...register('role', { required: true })} className="input">
-        <option value="">Select role</option>
-        <option value="customer">Customer</option>
-        <option value="seller">Seller</option>
-      </select>
-      {errors.role && <p className="text-red-500">Role is required</p>}
+        <select
+          {...register('role', { required: true })}
+          className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-300"
+        >
+          <option value="">Select role</option>
+          <option value="customer">Customer</option>
+          <option value="seller">Seller</option>
+        </select>
+        {errors.role && <p className="text-red-500 text-sm">Role is required</p>}
 
-      <input
-        type="email"
-        placeholder="Email"
-        {...register('email', {
-          required: 'Email is required',
-          pattern: {
-            value: /^\S+@\S+$/i,
-            message: 'Invalid email format'
-          }
-        })}
-        className="input"
-      />
-      {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+        <input
+          type="email"
+          placeholder="Email"
+          {...register('email', {
+            required: 'Email is required',
+            pattern: {
+              value: /^\S+@\S+$/i,
+              message: 'Invalid email format'
+            }
+          })}
+          className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-300"
+        />
+        {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
 
-      <input
-        type="password"
-        placeholder="Password"
-        {...register('password', { required: 'Password is required' })}
-        className="input"
-      />
-      {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+        <input
+          type="password"
+          placeholder="Password"
+          {...register('password', { required: 'Password is required' })}
+          className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-300"
+        />
+        {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
 
-      <input
-        type="password"
-        placeholder="Confirm Password"
-        {...register('confirmPassword', {
-          required: 'Confirm password is required',
-          validate: (val) => val === watch('password') || 'Passwords do not match'
-        })}
-        className="input"
-      />
-      {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword.message}</p>}
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          {...register('confirmPassword', {
+            required: 'Confirm password is required',
+            validate: (val) => val === watch('password') || 'Passwords do not match'
+          })}
+          className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-300"
+        />
+        {errors.confirmPassword && (
+          <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
+        )}
 
-      {errorMsg && <p className="text-red-500">{errorMsg}</p>}
+        {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
 
-      <button type="submit" className="btn">
-        Register
-      </button>
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition disabled:opacity-50"
+          disabled={loading}
+        >
+          {loading ? 'Registering...' : 'Register'}
+        </button>
 
-      <p className="text-sm">
-        Already have an account? <a href="/login" className="text-blue-600 underline">Login</a>
-      </p>
-    </form>
+        <p className="text-sm text-center">
+          Already have an account?{' '}
+          <a href="/" className="text-blue-600 underline hover:text-blue-800">
+            Login here
+          </a>
+        </p>
+      </form>
+    </div>
   )
 }
 
