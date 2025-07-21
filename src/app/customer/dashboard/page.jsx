@@ -1,7 +1,13 @@
 const dashboard = () => {
-    return (
-        <div>hi customer</div>
-    )
-}
+  const db = getFirestore(app);
+  const auth = getAuth(app);
 
-export default dashboard
+  const user = auth.currentUser;
+  if (!user) {
+    return <div>Please log in to access the dashboard.</div>;
+  }
+
+  return <h1></h1>;
+};
+
+export default dashboard;
