@@ -139,7 +139,7 @@ const DashboardSellerPage = () => {
   return (
     <div>
       <h1 className="text-xl font-semibold m-4">
-        Welcome to Seller Dashboard {idUser}
+        Welcome to Seller Dashboard!
       </h1>
 
       <div className="flex flex-row my-4 justify-between items-center m-4">
