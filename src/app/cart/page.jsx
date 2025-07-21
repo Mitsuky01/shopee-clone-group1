@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Impor useRouter untuk navigasi
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '@/utils/firebase';
+
 function CartItem({ item, onUpdateQuantity, onRemove }) {
   const isStockInsufficient = false; 
 
@@ -39,7 +41,7 @@ export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
-  const router = useRouter(); // Inisialisasi router
+  const router = useRouter();
 
   useEffect(() => {
     if (auth) {
@@ -92,43 +94,28 @@ export default function CartPage() {
     await updateDoc(doc(db, 'carts', currentUser.uid), { items: updatedItems });
   };
 
-  // --- FUNGSI PEMBELIAN YANG DIPERBARUI ---
   const handlePurchase = async () => {
     if (!currentUser || cartItems.length === 0) {
       alert("Keranjang kosong atau Anda belum login.");
       return;
     }
-
-    // 1. Siapkan data untuk dokumen pesanan baru
     const newOrder = {
       userId: currentUser.uid,
-      items: cartItems, // Salin semua item dari keranjang
+      items: cartItems,
       totalPrice: cartItems.reduce((total, item) => total + (item.price * item.quantity), 0),
-      createdAt: serverTimestamp(), // Gunakan waktu server Firebase
-      status: 'Selesai' // Anda bisa menggunakan status lain seperti 'Diproses'
+      createdAt: serverTimestamp(),
+      status: 'Selesai'
     };
-
     try {
-      // 2. Tambahkan dokumen pesanan baru ke koleksi 'orders'
       await addDoc(collection(db, "orders"), newOrder);
-
-      // 3. Kosongkan keranjang pengguna di Firestore
       const cartRef = doc(db, 'carts', currentUser.uid);
-      await updateDoc(cartRef, {
-        items: []
-      });
-      
-      // 4. Kosongkan state keranjang di frontend agar tampilan update
+      await updateDoc(cartRef, { items: [] });
       setCartItems([]);
-      
       alert("Pembelian berhasil! Pesanan Anda telah dibuat.");
-      
-      // 5. Arahkan pengguna ke halaman riwayat pesanan
-      router.push('/order-history'); // Ganti dengan path halaman riwayat pesanan Anda
-
+      router.push('/order-history');
     } catch (error) {
       console.error("Error saat membuat pesanan: ", error);
-      alert("Terjadi kesalahan saat melakukan pembelian. Silakan coba lagi.");
+      alert("Terjadi kesalahan saat melakukan pembelian.");
     }
   };
 
@@ -165,22 +152,36 @@ export default function CartPage() {
               />
             ))
           ) : (
-            <p className="p-8 text-center text-gray-500">Keranjang Anda masih kosong.</p>
+            <div className="text-center p-12">
+              <p className="text-gray-500 mb-4">Keranjang Anda masih kosong.</p>
+              <Link href="/customer/dashboard">
+                <button className="bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600 font-semibold">
+                  Mulai Belanja
+                </button>
+              </Link>
+            </div>
           )}
         </div>
 
         {cartItems.length > 0 && (
-          <div className="mt-6 flex flex-col items-end">
-            <div className="text-xl font-bold text-gray-800 mb-4">
-              <span>Total Harga: </span>
-              <span>Rp{totalPrice.toLocaleString('id-ID')}</span>
+          <div className="mt-6 flex flex-col md:flex-row justify-between items-center">
+            <Link href="/customer/dashboard">
+              <button className="text-orange-500 font-semibold hover:underline">
+                ← Lanjut Belanja
+              </button>
+            </Link>
+            <div className="flex flex-col items-end mt-4 md:mt-0">
+              <div className="text-xl font-bold text-gray-800 mb-4">
+                <span>Total Harga: </span>
+                <span>Rp{totalPrice.toLocaleString('id-ID')}</span>
+              </div>
+              <button 
+                onClick={handlePurchase} 
+                className="bg-orange-500 text-white px-10 py-3 rounded-md text-lg font-semibold hover:bg-orange-600 transition-colors"
+              >
+                Beli
+              </button>
             </div>
-            <button 
-              onClick={handlePurchase} 
-              className="bg-orange-500 text-white px-10 py-3 rounded-md text-lg font-semibold hover:bg-orange-600 transition-colors"
-            >
-              Beli
-            </button>
           </div>
         )}
       </div>
