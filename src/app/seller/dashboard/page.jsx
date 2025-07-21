@@ -139,7 +139,7 @@ const DashboardSellerPage = () => {
   return (
     <div>
       <h1 className="text-xl font-semibold m-4">
-        Welcome to Seller Dashboard {idUser}
+        Welcome to Seller Dashboard!
       </h1>
 
       <div className="flex flex-row my-4 justify-between items-center m-4">
@@ -199,7 +199,7 @@ const DashboardSellerPage = () => {
                 />
               </td>
               <td className="border border-gray-300 px-4 py-2">{product.quantity}</td>
-              <td className="border border-gray-300 px-4 py-2">${product.price}</td>
+              <td className="border border-gray-300 px-4 py-2">Rp {product.price}</td>
               <td className="border border-gray-300 px-4 py-2">{product.category}</td>
               <td className="border border-gray-300 px-4 py-2">{product.description}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">
