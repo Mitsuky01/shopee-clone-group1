@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { collection, getDocs } from 'firebase/firestore'
+import { getAuth } from 'firebase/auth'
 import { db } from '@/utils/firebase'
 import Navbar from './components/Navbar'
 import ProductCard from './components/ProductCard'
@@ -12,6 +13,12 @@ export default function DashboardPage() {
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState('default')
   const [category, setCategory] = useState('all')
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const auth = getAuth()
+    setUser(auth.currentUser)
+  }, [])
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -23,25 +30,22 @@ export default function DashboardPage() {
       setProducts(data)
     }
 
-    fetchProducts()
-  }, [])
+    if (user) fetchProducts()
+  }, [user])
 
   useEffect(() => {
     let result = [...products]
 
-    // Search
     if (search) {
       result = result.filter(p =>
         p.name.toLowerCase().includes(search.toLowerCase())
       )
     }
 
-    // Category filter
     if (category !== 'all') {
       result = result.filter(p => p.category === category)
     }
 
-    // Sort
     if (sort === 'low') {
       result.sort((a, b) => a.price - b.price)
     } else if (sort === 'high') {
@@ -50,6 +54,10 @@ export default function DashboardPage() {
 
     setFiltered(result)
   }, [products, search, sort, category])
+
+  if (!user) {
+    return <div className="p-6 text-center">Please log in to access the dashboard.</div>
+  }
 
   return (
     <main className="min-h-screen bg-gray-100 p-6">
@@ -70,16 +78,3 @@ export default function DashboardPage() {
     </main>
   )
 }
-const dashboard = () => {
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-
-  const user = auth.currentUser;
-  if (!user) {
-    return <div>Please log in to access the dashboard.</div>;
-  }
-
-  return <h1></h1>;
-};
-
-export default dashboard;
