@@ -1,20 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link'; 
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
-// Menggunakan path relatif yang sudah kita pastikan benar
 import { db, auth } from '@/utils/firebase';
 
-// Komponen Utama Halaman Riwayat Pesanan
 export default function OrderHistoryPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Cek status login pengguna
   useEffect(() => {
-    // Menambahkan pengecekan untuk memastikan 'auth' tidak undefined
     if (auth) {
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         setCurrentUser(user);
@@ -24,30 +21,25 @@ export default function OrderHistoryPage() {
       });
       return () => unsubscribe();
     } else {
-      console.error("Objek Firebase Auth tidak tersedia. Periksa file firebase.js Anda.");
+      console.error("Objek Firebase Auth tidak tersedia.");
       setLoading(false);
     }
   }, []);
 
-  // Ambil data pesanan dari Firestore setelah pengguna terdeteksi
   useEffect(() => {
-    // Jangan lakukan apa-apa jika tidak ada pengguna yang login
     if (!currentUser) return;
 
     const fetchOrders = async () => {
       setLoading(true);
       try {
-        // 1. Buat query untuk mendapatkan pesanan milik pengguna yang sedang login
         const q = query(
           collection(db, 'orders'), 
-          where("userId", "==", currentUser.uid), // Filter berdasarkan userId
-          orderBy("createdAt", "desc") // Urutkan dari yang paling baru
+          where("userId", "==", currentUser.uid),
+          orderBy("createdAt", "desc")
         );
         
-        // 2. Jalankan query
         const querySnapshot = await getDocs(q);
         
-        // 3. Ubah data hasil query menjadi array yang bisa kita gunakan
         const userOrders = [];
         querySnapshot.forEach((doc) => {
           userOrders.push({ id: doc.id, ...doc.data() });
@@ -56,14 +48,13 @@ export default function OrderHistoryPage() {
         setOrders(userOrders);
       } catch (error) {
         console.error("Error mengambil riwayat pesanan: ", error);
-        // Anda bisa menambahkan state untuk menampilkan pesan error di UI
       } finally {
         setLoading(false);
       }
     };
 
     fetchOrders();
-  }, [currentUser]); // Jalankan ulang efek ini jika currentUser berubah
+  }, [currentUser]);
 
   if (loading) {
     return <p className="text-center p-8">Memuat riwayat pesanan...</p>;
@@ -76,11 +67,17 @@ export default function OrderHistoryPage() {
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="container mx-auto p-4 md:p-8">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">Riwayat Pesanan Saya</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">Riwayat Pesanan Saya</h1>
+          <Link href="/customer/dashboard">
+            <button className="bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600 font-semibold">
+              Kembali Belanja
+            </button>
+          </Link>
+        </div>
         
         {orders.length > 0 ? (
           <div className="space-y-6">
-            {/* Loop melalui setiap pesanan dan tampilkan sebagai kartu */}
             {orders.map(order => (
               <div key={order.id} className="bg-white p-6 rounded-lg shadow-md">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 mb-4">
@@ -93,7 +90,6 @@ export default function OrderHistoryPage() {
                   <p className="text-lg font-bold text-gray-800 mt-2 md:mt-0">Total: Rp{order.totalPrice.toLocaleString('id-ID')}</p>
                 </div>
                 
-                {/* Daftar produk dalam pesanan tersebut */}
                 <div className="space-y-4">
                   {order.items.map(item => (
                     <div key={item.productId} className="flex items-center">
