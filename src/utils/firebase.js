@@ -1,3 +1,7 @@
+import { initializeApp } from "firebase/app";
+import { getFirestore } from 'firebase/firestore';
+import { getAnalytics } from "firebase/analytics";
+
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -14,6 +18,14 @@ const firebaseConfig = {
   appId: "1:561787923994:web:f0120142e682e40462eba3"
 };
 
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+let analytics;
+if (typeof window !== "undefined") {
+  analytics = getAnalytics(app);
+}
+
+export { app, db, analytics }
 // Inisialisasi Firebase dengan aman untuk mencegah error di Next.js
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
